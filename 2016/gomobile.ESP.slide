@@ -1,0 +1,300 @@
+Aplicaciones Android con Gomobile
+10 Nov 2016
+
+Daniel Esteban
+@_conejo
+
+* Atención
+
+.image img/caution.png 300 _
+
+El proyecto Go Mobile es experimental. Úsalo bajo tu propio riesgo.
+
+* Motivación
+
+- Es fácil escribir apps móviles en Go
+- Re-usa el código/librería Go que ya tengas
+- Usa Go en todo el stack (cliente/servidor)
+
+
+* Dos formas
+
+- Escribir aplicaciones solo-Go. (OpenGL)
+- Escribir aplicaciones SDK generando _bindings_ desde un paquete Go e invocarlo desde Java (Android) u Objective-C (iOS).
+
+.image img/appleandroid.png 300 _
+
+
+
+* Aplicaciones nativas
+
+* En resumen
+
+- Escritas completamente en Go (yay!)
+- Funcionan en Android, iOS y escritorio
+- OpenGL ES 2 bindings
+- Soporte experimental para audio, sprites, fuentes,...( Más info en [[https://godoc.org/golang.org/x/mobile][golang.org/x/mobile]] )
+
+Compilar con 
+
+    $ gomobile build -target=android path/to/your/project
+    $ gomobile build -target=ios path/to/your/project
+
+
+
+* Aplicaciones SDK (de lo que esta charla trata)
+
+
+* Ventajas
+
+- Re-usar código Go existente
+- Código multiplataforma (mismo código para Android e iOS)
+
+
+* Desventajas
+
+- Solo una parte de los tipos están soportados
+- _Sobrecarga_ de rendimiento por los bindings
+- Algunas limitaciones en la API 
+- Parte del código es específico para cada plataforma 
+
+
+* antes de empezar
+
+- Go 1.5 o superior
+- Instalar con:
+
+ 
+    $ go get golang.org/x/mobile/cmd/gomobile
+    $ gomobile init # it might take a few minutes
+- Android SDK & emulator
+- Android Studio (recomendado)
+
+
+* Binding en acción
+
+Código Go
+
+.code snippets/go1.go
+
+
+Código Java generado
+
+.code snippets/javabind1.java
+
+
+Compilar con
+
+    $ gomobile bind -target android -o mygolibrary.aar -v .
+
+
+
+
+* Más binding (structs)
+Código Go
+
+.code snippets/gobind2.go
+
+* Java API generada
+
+.code snippets/javabind2.java
+
+Usar desde Java con
+
+	Counter counter = newCounter();
+	counter.setValue(12345);
+	counter.inc();
+	
+    
+* Llamar a Go desde Java
+
+*mygolibrary.go*
+
+.code snippets/go1.go
+
+
+*MainActivity.java*
+
+.code snippets/java1.java
+
+
+* Llamar a Go desde Java (con errores)
+
+*mygolibrary.go*
+
+.code snippets/go1error.go
+
+
+*MainActivity.java*
+
+.code snippets/java1error.java
+
+
+* Llamar a Java desde Go (1/3)
+
+Creamos una interfaz en Go que será exportada (gomobile bind) a Java, posterior la tendremos que implementar en Java
+
+*mygolibrary.go*
+
+.code snippets/go2.go
+
+
+* Llamar a Java desde Go (2/3)
+
+Implementar en Java nuestra interfaz
+
+*GoCallback.java*
+
+.code snippets/java2.java
+
+
+* Llamar a Java desde Go (3/3)
+
+Registrar el callback (en Java) 
+
+    // REGISTER CALLBACK
+    GoCallback gocb = new GoCallback();
+    Mygolibrary.registerJavaCallback(gocb);
+    
+Después de eso, ya la podemos usar desde Go
+
+    jc.OneMethod();
+    jc.AnotherMethod("Some string here");
+    
+    
+
+* Cómo compilar
+
+
+    $ gomobile bind -target android -o mygolibrary.aar -v .
+     
+En nuestro proyecto android:
+
+*android/settings.gradle*
+
+    include ':app', ':mygolibrary'
+    
+    
+    
+*android/app/build.gradle*
+
+    dependencies {
+        ...
+        compile project(':mygolibrary')
+    }
+        
+    
+* Pero no recompila!    
+    
+Si modificamos mygolibrary.aar los cambios no se añadiran
+
+.image img/why.png 400 _
+
+* Pero no recompila!    
+
+Tenemos que recompilarlo (en gradle)
+    
+*android/build.gradle* (añadir)
+
+    repositories {
+        ...
+        flatDir {
+            dirs "$rootDir/mygolibrary"
+        }
+    }
+    
+    
+*android/app/build.gradle* (modificar)
+
+    dependencies {
+        ...
+        compile (':mygolibrary@aar') { changing = true }
+    }
+    
+
+
+* Historia de éxito
+
+*Password* *Manager* para [[http://bitcointrezor.com/][TREZOR]] para dispositivos Android
+
+- React native para el front-end
+- Librería _tesoro_ ya existente
+- Un poco de Java para unir las piezas
+- _Pronto_ en Google Play Store
+
+
+.image img/trezor.success.png 250 _
+
+
+* Password Manager (continuación)
+
+.image img/trezor.jpg
+
+_(early_app_version)_
+
+* Password Manager (continuación)
+
+Cómo unir las piezas
+
+ +--------------+   async promise   +--------+  blocking call    +--------+
+ | REACT NATIVE +-----------------> |  JAVA  +-----------------> |   GO   |
+ +-------+------+                   ++----+--+                   +----+---+
+         ^                           |    ^                           |
+         |          events           |    |    registered callback    |
+         +---------------------------+    +---------------------------+
+         
+- React native <-> Java la comunicación es asíncrona
+- Java <-> Go debe usar una clase Async (Java) o gorutinas
+- Acceso USB: Pedir permiso en Java, pasar el file descriptor a Go
+- Dropbox auth: Login en Java, pasar token a Go
+- I/O en Go (en la carpeta de la app sin problemas)
+
+
+* ¿Por qué usamos un callback?
+
+* Otras historias de éxito
+
+*Ivy*
+- Ivy es un intérprete para un APL-like language
+- Escrito por Rob Pike
+- Código fuente en [[https://github.com/robpike/ivy]]
+- Google Play Store [[https://play.google.com/store/apps/details?id=org.golang.ivy]]
+
+
+*Goku*
+- Sudoku solver
+- *React-native* para la UI
+- Escrito por Miguel Espinoza
+- Código fuente en [[https://github.com/miguelespinoza/react-goku]]
+- Google Play Store [[https://play.google.com/store/apps/details?id=com.miguelespinoza.goku]]
+
+.image img/apps.jpg 120 _
+
+
+* Algunos trucos (basados en nuestra experiencia)
+
+- Go puede tomar bastante tiempo en ejecutarse, usar gorutinas
+
+    func CallThisFromJava() {
+        go runThisAsync()
+    }
+    func runThisAsync() {
+        /* your code here */
+    }
+    
+- Java se quejará si Go tarda mucho
+- Si usas React-native (UI), haz tus llamadas Java<->Go asíncronas también
+- Para acceder al hardware o algunas otras características, necesitas pedir permiso en Java y luego pasarlo a Go
+- Borrar los listeners o crearlos solo una vez
+- (RR) Reload no siempre funciona, guardar el fichero
+    
+
+* Notas
+- Es experimental, estable pero puede cambiar y romperse
+- Hay poco soporte (por el momento) para el hardware y los sensores
+- En el fondo es Linux (android), pero SELinux está activado
+- No olvidarse de tunear el AndroidManifest.xml
+- Ejemplo de aplicación en [[https://github.com/conejoninja/MyGoApplication]]
+
+.image img/gopher.png 250 _
+
