@@ -4,4 +4,4 @@ To install the present tool, use go get:
 
 	go get golang.org/x/tools/cmd/present
 
-Or in the URL : http://talks.godoc.org/github.com/conejoninja/talks/
+Or in the URL : http://talks.madriguera.me/
