@@ -4,12 +4,15 @@ Android apps with Gomobile
 Daniel Esteban
 @_conejo
 
+: I could talk about gomobile for hours but only have 20 minutes today
 
 * Caution
 
 .image fosdem/img/caution.png 300 _
 
 The Go Mobile project is experimental. Use this at your own risk.
+
+: What means experimental? It may change, I found it stable. We'll talk about this later
 
 * Motivation
 
@@ -36,6 +39,7 @@ The Go Mobile project is experimental. Use this at your own risk.
 
 .image fosdem/img/gomobilebind.png 170 _
 
+: There's a third option, cross-compile, push it to your device, execute by some means (adb shell, busybox,...) 
 
 
 * Native applications
@@ -53,15 +57,21 @@ Build with
     $ gomobile build -target=android path/to/your/project
     $ gomobile build -target=ios path/to/your/project
 
+: Checkout android-go, similar, vulkan API for interfaces
+: APK could not be published, need to unzip, change icon, sign,...
 
 
-* SDK applications
+* SDK applications (what this talk is really about)
+
+: What I have experience with
 
 
 * Advantages
 
 - Re-use existing Go code
 - Cross-platform code (same* code for Android and iOS)
+
+: *same, we'll see later 
 
 
 * Disadvantages
@@ -71,6 +81,7 @@ Build with
 - Some API limitation 
 - Some code (UI) needs to be platform specific 
 
+: For example no unsigned integer
 
 * Before we start
 
@@ -82,6 +93,9 @@ Build with
     $ gomobile init # it might take a few minutes
 - Android SDK & emulator
 - Android Studio (recommended)
+
+: genymotion recommended (paid emulator)
+
 
 * Binding in action (summary)
 
@@ -105,6 +119,7 @@ Compile with
 
     $ gomobile bind -target android -o mygolibrary.aar -v .
 
+: Notice the upper case in Go and lower case in Java
 
 
 
@@ -123,6 +138,9 @@ Use it from Java
 	counter.setValue(12345);
 	counter.inc();
 	
+    
+: Again, upper/lower
+: getter/setter for variables/fields
     
 * Calling Go from Java
 
@@ -148,6 +166,9 @@ Use it from Java
 .code fosdem/snippets/java1error.java
 
 
+: When a function return two parameters, the second has to be an error, that throws an exception
+
+
 * Calling Java from Go (1/3)
 
 We create an interface in Go that will be exported (gomobile bind) to Java and we need to implement it
@@ -155,6 +176,10 @@ We create an interface in Go that will be exported (gomobile bind) to Java and w
 *mygolibrary.go*
 
 .code fosdem/snippets/go2.go
+
+
+: Now let's do the other way around
+: Why? for example to update the UI on long process, or in goroutines, explain later
 
 
 * Calling Java from Go (2/3)
@@ -200,7 +225,11 @@ In your android project:
         ...
         compile project(':mygolibrary')
     }
-        
+    
+*mygolibrary/build.gradle*
+
+        configurations.maybeCreate("default")
+        artifacts.add("default", file('mygolibrary.aar'))
 
 _(or_in_ *Android* *Studio*: _File_>_New_>_New_Module_>_Import_.JAR/.AAR_Package)_        
         
@@ -246,12 +275,15 @@ We need to make gradle to recompile it
 
 .image fosdem/img/trezor.success.png 250 _
 
+: Developed during a hackaton in less than two days
+: Limited experience with Java or Android or React native
+: App for TREZOR, this small device, that connects via USB
+
 
 * Password Manager (continuation)
 
 .image fosdem/img/trezor.jpg
 
-_(early_app_version)_
 
 * Password Manager (continuation)
 
@@ -263,6 +295,10 @@ How to glue things together
 - USB Access: Ask permission in Java, pass file descriptor to Go
 - Dropbox auth: Login in Java, pass token to Go
 
+
+: We kept Java to a minimum, just as a proxy between Go and React
+: We needed to ask permission to access the USB in Java and then pass the file descriptior to Go
+: The main code is Go (read/write files, internet connection, usb communication,...)
 
 * Other successful stories
 
@@ -315,13 +351,18 @@ How to glue things together
 
 .image fosdem/img/gopher.png 250 _
 
+: Sensor support, gomobile objetive is to provide the same interfeace for both Android and iOS
+: Linux, we used a USB driver for Linux with a tiny change to accept the file descriptor
+
 * Links
 - Example application at [[https://github.com/conejoninja/MyGoApplication]]
 - Example of bindings at [[https://github.com/conejoninja/gobindings]]
 - Gomobile wiki [[https://github.com/golang/go/wiki/Mobile]]
+- Gomobile source at Github [[https://github.com/golang/mobile/]]
 - Android-go [[https://github.com/xlab/android-go]]
 - Vulkan API [[https://github.com/vulkan-go/vulkan]]
 - Source of Ivy [[https://github.com/robpike/ivy]]
 - Source of Goku [[https://github.com/miguelespinoza/react-goku]]
 
+: Some useful links
 
