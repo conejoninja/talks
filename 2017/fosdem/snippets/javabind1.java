@@ -1,3 +1,4 @@
 public abstract class Mygolibrary {
-    public static String hello(String name) { ... }
+    public static native String hello(String name);
+    ...
 }

@@ -24,7 +24,7 @@ The Go Mobile project is experimental. Use this at your own risk.
 
 *Gomobile* is a toolkit that automates and ease a lot the process for mobile platforms. It provides bindings of Android and iOS through *cgo*
 
-.image fosdem/img/gomobile.png
+.image fosdem/img/gomobile.png 150 _
 
 * Two strategies
 
@@ -55,13 +55,13 @@ Build with
 
 
 
-* SDK applications (what this talk is really about)
+* SDK applications
 
 
 * Advantages
 
 - Re-use existing Go code
-- Cross-platform code (same code for Android and iOS)
+- Cross-platform code (same* code for Android and iOS)
 
 
 * Disadvantages
@@ -69,7 +69,7 @@ Build with
 - Only a subset of Go types are supported
 - Language bindings have a performance overhead
 - Some API limitation 
-- Some code needs to be platform specific 
+- Some code (UI) needs to be platform specific 
 
 
 * Before we start
@@ -83,9 +83,11 @@ Build with
 - Android SDK & emulator
 - Android Studio (recommended)
 
-* Binding in action
+* Binding in action (summary)
 
 .html fosdem/snippets/tblbindings.html
+
+Example at [[https://github.com/conejoninja/gobindings][github.com/conejoninja/gobindings]]
 
 * Binding in action
 
@@ -94,7 +96,7 @@ Go code
 .code fosdem/snippets/go1.go
 
 
-Generated Java code
+Generated Java bindings
 
 .code fosdem/snippets/javabind1.java
 
@@ -111,7 +113,7 @@ Go code
 
 .code fosdem/snippets/gobind2.go
 
-* Generated Java API
+* Generated Java bindings
 
 .code fosdem/snippets/javabind2.java
 
@@ -200,13 +202,16 @@ In your android project:
     }
         
 
-* But it doesn't recompile    
+_(or_in_ *Android* *Studio*: _File_>_New_>_New_Module_>_Import_.JAR/.AAR_Package)_        
+        
+
+* Problem: it doesn't add changes made to go code    
     
 If you modify mygolibrary.aar it will not add the new changes to the project
     
 .image fosdem/img/why.png 400 _
 
-* But it doesn't recompile
+* Solution
 
 We need to make gradle to recompile it
 
@@ -231,12 +236,12 @@ We need to make gradle to recompile it
 
 * Success story
 
-*Password* *Manager* for [[http://bitcointrezor.com/][TREZOR]] on Android devices
+*Password* *Manager* for [[https://shop.trezor.io/?a=227f182fcbbe][TREZOR]] on Android devices
 
 - React native for front-end
 - Already existing go library (_tesoro_)
 - Some Java to glue things together
-- _Soon_ at Google Play Store
+- Available at the [[https://play.google.com/store/apps/details?id=me.madriguera.pma][Google Play Store]]
 
 
 .image fosdem/img/trezor.success.png 250 _
@@ -252,21 +257,12 @@ _(early_app_version)_
 
 How to glue things together
 
- +--------------+   async promise   +--------+  blocking call    +--------+
- | REACT NATIVE +-----------------> |  JAVA  +-----------------> |   GO   |
- +-------+------+                   ++----+--+                   +----+---+
-         ^                           |    ^                           |
-         |          events           |    |    registered callback    |
-         +---------------------------+    +---------------------------+
+.image fosdem/img/pma.flow.png 350 _
          
-- React native <-> Java communication is async
-- Java <-> Go should use an Async class or goroutines
+         
 - USB Access: Ask permission in Java, pass file descriptor to Go
 - Dropbox auth: Login in Java, pass token to Go
-- I/O in Go (app's folder)
 
-
-* Why we used a callback instead of direct calls?
 
 * Other successful stories
 
@@ -287,9 +283,9 @@ How to glue things together
 .image fosdem/img/apps.jpg 120 _
 
 
-* Some tricks (based in our experience)
+* Some tips (based in our experience)
 
-- Go code could take long time to execute, use goroutines
+- Go code could take long time to execute, use goroutines (or Async in Java)
 
     func CallThisFromJava() {
         go runThisAsync()
@@ -299,18 +295,33 @@ How to glue things together
     }
     
 - Java will complain if Go takes too much time
-- If you use React-native (UI), make your Java<->Go calls async too
 - For accessing hardware or other features, you need to ask permission in Java and pass it to Go
+- No problem I/O at internal storage (/data/data/your.app.name)
 - Remove listeners or create them only once (Android app's life cycle)
 - (RR) Reload (react native) doesn't always work, make sure you saved the file prior to reload
 
+* Some notes
+- Expect changes (breaking ones)
+
+.html fosdem/snippets/tblchanges.html
+
+.image fosdem/img/caution.png 200 _
 
 * Notes
 - It's experimental, stable but it may change
 - Little direct support (for the moment) for hardware & sensors
-- It's a Linux (android) device, but SELinux is enabled
-- Don't forget about Android Manifest.xml
-- Example application at [[https://github.com/conejoninja/MyGoApplication]]
+- It's a Linux (android) device, with some restrictions (SELinux)
+- Don't forget about AndroidManifest.xml
 
 .image fosdem/img/gopher.png 250 _
+
+* Links
+- Example application at [[https://github.com/conejoninja/MyGoApplication]]
+- Example of bindings at [[https://github.com/conejoninja/gobindings]]
+- Gomobile wiki [[https://github.com/golang/go/wiki/Mobile]]
+- Android-go [[https://github.com/xlab/android-go]]
+- Vulkan API [[https://github.com/vulkan-go/vulkan]]
+- Source of Ivy [[https://github.com/robpike/ivy]]
+- Source of Goku [[https://github.com/miguelespinoza/react-goku]]
+
 

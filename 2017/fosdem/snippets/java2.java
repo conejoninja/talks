@@ -1,4 +1,4 @@
-import go.mygolibrary.JavaCallback;
+import mygolibrary.JavaCallback;
 
 public class GoCallback implements JavaCallback {
 

@@ -1,4 +1,4 @@
-import go.mygolibrary.Mygolibrary;
+import mygolibrary.Mygolibrary;
 
 public class MainActivity {
     ...

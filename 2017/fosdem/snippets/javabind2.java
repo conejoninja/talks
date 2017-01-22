@@ -1,9 +1,12 @@
-public abstract class Mygolibrary {
-	public static final class Counter {
-		public void inc() { ... }
-		public long getValue() { ... }
-		public void setValue(long value) { ... }
-	}
+public final class Counter implements Seq.Proxy {
+	public native void inc();
 
-	public static Counter newCounter() { ... }
+	public final native long getValue();
+	public final native void setValue(long v);
+	...
+}
+
+public abstract class Mygolibrary {
+	public static native Counter newCounter();
+	...
 }
