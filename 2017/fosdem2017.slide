@@ -57,6 +57,7 @@ Build with
     $ gomobile build -target=android path/to/your/project
     $ gomobile build -target=ios path/to/your/project
 
+: Similar to develop NDK apps with C wrappers
 : Checkout android-go, similar, vulkan API for interfaces
 : APK could not be published, need to unzip, change icon, sign,...
 
