@@ -1,5 +1,6 @@
 Android apps with Gomobile
 5 Feb 2017
+Tags: gomobile, android
 
 Daniel Esteban
 @_conejo
@@ -283,7 +284,7 @@ We need to make gradle to recompile it
 
 * Password Manager (continuation)
 
-.image fosdem/img/trezor.jpg
+.image fosdem/img/trezor.jpg 550 _
 
 
 * Password Manager (continuation)
@@ -336,6 +337,9 @@ How to glue things together
 - No problem I/O at internal storage (/data/data/your.app.name)
 - Remove listeners or create them only once (Android app's life cycle)
 - (RR) Reload (react native) doesn't always work, make sure you saved the file prior to reload
+
+: For writing at the external storage you need to ask for permissions and I don't think it's supported yet. (SAF not supported)
+
 
 * Some notes
 - Expect changes (breaking ones)
