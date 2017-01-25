@@ -18,17 +18,22 @@ The Go Mobile project is experimental. Use this at your own risk.
 * Motivation
 
 - Easy (and fun) to write mobile applications with Go
-- Re-use your existing Go code/libraries
+- Re-use your existing Go code/packages
 - Use Go for your full environment (backend/client)
 
 .image fosdem/img/appleandroid.png 300 _
 
+: Why develop apps with Go?
+: You don't need a Java/Android developer
 
 * How is it possible?
 
 *Gomobile* is a toolkit that automates and ease a lot the process for mobile platforms. It provides bindings of Android and iOS through *cgo*
 
 .image fosdem/img/gomobile.png 150 _
+
+: Java could run C code through JNI (Java Native Interface)
+: Go connected to C via cgo
 
 * Two strategies
 
@@ -58,14 +63,16 @@ Build with
     $ gomobile build -target=android path/to/your/project
     $ gomobile build -target=ios path/to/your/project
 
-: Similar to develop NDK apps with C wrappers
-: Checkout android-go, similar, vulkan API for interfaces
+: Similar to what you were doing in NDK/native apps, but Go instead of C
+: Checkout android-go, similar, vulkan API for user interfaces
 : APK could not be published, need to unzip, change icon, sign,...
+: Maybe gomobile could just generate intermediate steps
 
 
 * SDK applications (what this talk is really about)
 
 : What I have experience with
+: I think it's easier than native / all-go apps
 
 
 * Advantages
@@ -84,6 +91,7 @@ Build with
 - Some code (UI) needs to be platform specific 
 
 : For example no unsigned integer
+: Functions could return none, one or two values, the second one has to be an error
 
 * Before we start
 
