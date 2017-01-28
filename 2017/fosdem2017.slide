@@ -277,8 +277,8 @@ We need to make gradle to recompile it
 
 *Password* *Manager* for [[https://shop.trezor.io/?a=227f182fcbbe][TREZOR]] on Android devices
 
-- React native for front-end
-- Already existing go library (_tesoro_)
+- React native for user interface
+- Already existing go package ([[https://github.com/conejoninja/tesoro][tesoro]])
 - Some Java to glue things together
 - Available at the [[https://play.google.com/store/apps/details?id=me.madriguera.pma][Google Play Store]]
 
@@ -375,6 +375,7 @@ How to glue things together
 - Gomobile source at Github [[https://github.com/golang/mobile/]]
 - Android-go [[https://github.com/xlab/android-go]]
 - Vulkan API [[https://github.com/vulkan-go/vulkan]]
+- Genymotion (Android emulator) [[http://genymotion.com/]]
 - Source of Ivy [[https://github.com/robpike/ivy]]
 - Source of Goku [[https://github.com/miguelespinoza/react-goku]]
 
