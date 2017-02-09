@@ -1,0 +1,392 @@
+Android apps with Gomobile
+5 Feb 2017
+Tags: gomobile, android
+
+Daniel Esteban
+@_conejo
+
+: I could talk about gomobile for hours but only have 20 minutes today
+
+* Video
+
+This talk was presented at the [[https://fosdem.org/2017/schedule/event/go_mobile/][FOSDEM 2017 - Go Devroom]]
+
+[[https://www.youtube.com/watch?v=OaSkOjew1D4][Watch the talk on Youtube]] 
+(Due to a small problem with the camera, the recording start a few minutes late)
+
+
+
+* Caution
+
+.image fosdem/img/caution.png 300 _
+
+The Gomobile project is experimental. Use this at your own risk.
+
+: What means experimental? It may change, I found it stable. We'll talk about this later
+
+* Motivation
+
+- Easy (and fun) to write mobile applications with Go
+- Re-use your existing Go code/packages
+- Use Go for your full environment (backend/client)
+
+.image fosdem/img/appleandroid.png 300 _
+
+: Why develop apps with Go?
+: You don't need a Java/Android developer
+
+* How is it possible?
+
+*Gomobile* is a toolkit that automates and ease a lot the process for mobile platforms. It provides bindings of Android and iOS through *cgo*
+
+.image fosdem/img/gomobile.png 150 _
+
+: Java could run C code through JNI (Java Native Interface)
+: Go connected to C via cgo
+
+* Two strategies
+
+- Writing all-Go *native* mobile applications. (OpenGL)
+
+.image fosdem/img/gomobilebuild.png 170 _
+
+- Writing *SDK* *applications* by generating bindings from a Go package and invoke them from Java (on Android) and Objective-C (on iOS).
+
+.image fosdem/img/gomobilebind.png 170 _
+
+: There's a third option, cross-compile, push it to your device, execute by some means (adb shell, busybox,...) 
+
+
+* Native applications
+
+* In short
+
+- Entirely written in Go (yay!)
+- Works on Android, iOS and Desktop
+- OpenGL ES 2 bindings
+- Experimental support for audio, sprites, font,...( More info at [[https://godoc.org/golang.org/x/mobile][golang.org/x/mobile]] )
+- Not ready to be published*
+
+Build with
+
+    $ gomobile build -target=android path/to/your/project
+    $ gomobile build -target=ios path/to/your/project
+
+: Similar to what you were doing in NDK/native apps, but Go instead of C
+: Checkout android-go, similar, vulkan API for user interfaces
+: APK could not be published, need to unzip, change icon, sign,...
+: Maybe gomobile could just generate intermediate steps
+
+
+* SDK applications (what this talk is really about)
+
+: What I have experience with
+: I think it's easier than native / all-go apps
+
+
+* Advantages
+
+- Re-use existing Go code
+- Cross-platform code (same* code for Android and iOS)
+
+: *same, we'll see later 
+
+
+* Disadvantages
+
+- Only a subset of Go types are supported
+- Language bindings have a performance overhead
+- Some API limitation 
+- Some code (UI) needs to be platform specific 
+
+: For example no unsigned integer
+: Functions could return none, one or two values, the second one has to be an error
+
+* Before we start
+
+- Go 1.5 or above needed
+- To install:
+
+ 
+    $ go get golang.org/x/mobile/cmd/gomobile
+    $ gomobile init # it might take a few minutes
+- Android SDK & emulator
+- Android Studio (recommended)
+
+: genymotion recommended (paid emulator)
+
+
+* Binding in action (summary)
+
+.html fosdem/snippets/tblbindings.html
+
+Example at [[https://github.com/conejoninja/gobindings][github.com/conejoninja/gobindings]]
+
+* Binding in action
+
+Go code
+
+.code fosdem/snippets/go1.go
+
+
+Generated Java bindings
+
+.code fosdem/snippets/javabind1.java
+
+
+Compile with
+
+    $ gomobile bind -target android -o mygolibrary.aar -v .
+
+: Notice the upper case in Go and lower case in Java
+
+
+
+* More binding (structs)
+Go code
+
+.code fosdem/snippets/gobind2.go
+
+* Generated Java bindings
+
+.code fosdem/snippets/javabind2.java
+
+Use it from Java
+
+	Counter counter = newCounter();
+	counter.setValue(12345);
+	counter.inc();
+	
+    
+: Again, upper/lower
+: getter/setter for variables/fields
+    
+* Calling Go from Java
+
+*mygolibrary.go*
+
+.code fosdem/snippets/go1.go
+
+
+*MainActivity.java*
+
+.code fosdem/snippets/java1.java
+
+
+* Calling Go from Java (with errors)
+
+*mygolibrary.go*
+
+.code fosdem/snippets/go1error.go
+
+
+*MainActivity.java*
+
+.code fosdem/snippets/java1error.java
+
+
+: When a function return two parameters, the second has to be an error, that throws an exception
+
+
+* Calling Java from Go (1/3)
+
+We create an interface in Go that will be exported (gomobile bind) to Java and we need to implement it
+
+*mygolibrary.go*
+
+.code fosdem/snippets/go2.go
+
+
+: Now let's do the other way around
+: Why? for example to update the UI on long process, or in goroutines, explain later
+
+
+* Calling Java from Go (2/3)
+
+Implement our callback in Java
+
+*GoCallback.java*
+
+.code fosdem/snippets/java2.java
+
+
+* Calling Java from Go (3/3)
+
+Register your callback (in Java) 
+
+    // REGISTER CALLBACK
+    GoCallback gocb = new GoCallback();
+    Mygolibrary.registerJavaCallback(gocb);
+    
+After that point, you could call Java from Go
+
+    jc.OneMethod();
+    jc.AnotherMethod("Some string here");
+
+
+
+* How to build
+
+
+    $ gomobile bind -target android -o mygolibrary.aar -v .
+     
+In your android project:
+
+*android/settings.gradle*
+
+    include ':app', ':mygolibrary'
+    
+    
+    
+*android/app/build.gradle*
+
+    dependencies {
+        ...
+        compile project(':mygolibrary')
+    }
+    
+*mygolibrary/build.gradle*
+
+        configurations.maybeCreate("default")
+        artifacts.add("default", file('mygolibrary.aar'))
+
+_(or_in_ *Android* *Studio*: _File_>_New_>_New_Module_>_Import_.JAR/.AAR_Package)_        
+        
+
+* Problem: it doesn't add changes made to go code    
+    
+If you modify mygolibrary.aar it will not add the new changes to the project
+    
+.image fosdem/img/why.png 400 _
+
+* Solution
+
+We need to make gradle to recompile it
+
+*android/build.gradle* (add)
+
+    repositories {
+        ...
+        flatDir {
+            dirs "$rootDir/mygolibrary"
+        }
+    }
+    
+    
+*android/app/build.gradle* (modify)
+
+    dependencies {
+        ...
+        compile (':mygolibrary@aar') { changing = true }
+    }
+    
+
+
+* Success story
+
+*Password* *Manager* for [[https://shop.trezor.io/?a=227f182fcbbe][TREZOR]] on Android devices
+
+- React native for user interface
+- Already existing go package ([[https://github.com/conejoninja/tesoro][tesoro]])
+- Some Java to glue things together
+- Available at the [[https://play.google.com/store/apps/details?id=me.madriguera.pma][Google Play Store]]
+
+
+.image fosdem/img/trezor.success.png 250 _
+
+: Developed during a hackaton in less than two days
+: Limited experience with Java or Android or React native
+: App for TREZOR, this small device, that connects via USB
+
+
+* Password Manager (continuation)
+
+.image fosdem/img/trezor.jpg 550 _
+
+
+* Password Manager (continuation)
+
+How to glue things together
+
+.image fosdem/img/pma.flow.png 350 _
+         
+         
+- USB Access: Ask permission in Java, pass file descriptor to Go
+- Dropbox auth: Login in Java, pass token to Go
+
+
+: We kept Java to a minimum, just as a proxy between Go and React
+: We needed to ask permission to access the USB in Java and then pass the file descriptior to Go
+: The main code is Go (read/write files, internet connection, usb communication,...)
+
+* Other successful stories
+
+*Ivy*
+- Ivy is an interpreter for an APL-like language
+- Written by Rob Pike
+- Source at [[https://github.com/robpike/ivy]]
+- Google Play Store [[https://play.google.com/store/apps/details?id=org.golang.ivy]]
+
+
+*Goku*
+- Sudoku solver
+- *React-native* as UI
+- Written by Miguel Espinoza
+- Source at [[https://github.com/miguelespinoza/react-goku]]
+- Google Play Store [[https://play.google.com/store/apps/details?id=com.miguelespinoza.goku]]
+
+.image fosdem/img/apps.jpg 120 _
+
+
+* Some tips (based in our experience)
+
+- Go code could take long time to execute, use goroutines (or Async in Java)
+
+    func CallThisFromJava() {
+        go runThisAsync()
+    }
+    func runThisAsync() {
+        /* your code here */
+    }
+    
+- Java will complain if Go takes too much time
+- For accessing hardware or other features, you need to ask permission in Java and pass it to Go
+- No problem I/O at internal storage (/data/data/your.app.name)
+- Remove listeners or create them only once (Android app's life cycle)
+- (RR) Reload (react native) doesn't always work, make sure you saved the file prior to reload
+
+: For writing at the external storage you need to ask for permissions and I don't think it's supported yet. (SAF not supported)
+
+
+* Some notes
+- Expect changes (breaking ones)
+
+.html fosdem/snippets/tblchanges.html
+
+.image fosdem/img/caution.png 200 _
+
+* Notes
+- It's experimental, stable but it may change
+- Little direct support (for the moment) for hardware & sensors
+- It's a Linux (android) device, with some restrictions (SELinux)
+- Don't forget about AndroidManifest.xml
+
+.image fosdem/img/gopher.png 250 _
+
+: Sensor support, gomobile objetive is to provide the same interfeace for both Android and iOS
+: Linux, we used a USB driver for Linux with a tiny change to accept the file descriptor
+
+* Links
+- Example application at [[https://github.com/conejoninja/MyGoApplication]]
+- Example of bindings at [[https://github.com/conejoninja/gobindings]]
+- Gomobile wiki [[https://github.com/golang/go/wiki/Mobile]]
+- Gomobile Godoc [[https://godoc.org/golang.org/x/mobile]]
+- Gomobile source at Github [[https://github.com/golang/mobile/]]
+- Android-go [[https://github.com/xlab/android-go]]
+- Vulkan API [[https://github.com/vulkan-go/vulkan]]
+- Genymotion (Android emulator) [[http://genymotion.com/]]
+- Source of Ivy [[https://github.com/robpike/ivy]]
+- Source of Goku [[https://github.com/miguelespinoza/react-goku]]
+
+: Some useful links
+
