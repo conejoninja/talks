@@ -1,0 +1,136 @@
+Introducción a Gobot
+2018
+Tags: gobot, golang, arduino, automation, robot
+
+Daniel Esteban
+@_conejo
+
+
+
+* Atención!
+
+.image gobot/img/caution.png 300 _
+
+No me hago responsable de las chipas y calambrazos
+
+: Un poco en broma, pero tengamos un poco de cuidado
+
+* Arduino, Raspberry Pi, ESP8266,...
+
+: De qué vengo a hablar hoy. ¿quién sabe qué es un Arduino? ¿Y una RaspberryPi? Algo más dificil ¿Un ESP8266? ¿bananapi, odroid, netduino?... hay muchos .
+
+* Arduino
+.image gobot/img/boards2.png
+
+: Arduinos de uso general. 101 tiene BLE, acelerometro y un intel curie
+
+* Arduino (continuación)
+.image gobot/img/boards3.png
+
+* Arduino (continuación)
+.image gobot/img/boards4.png
+
+: dos nucleos, un linux y un arduino en la misma placa
+
+* Arduino (continuación)
+.image gobot/img/boards5.png
+
+: wereables, para ropa
+
+* Arduino (continuación)
+.image gobot/img/boards1.png 570 _
+
+: Estos son las versiones oficiales
+
+
+
+* Raspberry Pi, Orange Pi, BeagleBone, Odroid, Pine64, LattePanda,...
+
+.image gobot/img/rpi.jpg 560 _
+
+: son más potentes, corren linux, android o windows
+
+* La familia del ESP8266
+
+.image gobot/img/esp1.png
+
+: sin olvidar el nuevo ESP32, nodeMCU, wemos, incluso muchos "badges" (oshwdem por ejemplo)
+
+
+* Shields
+
+.image gobot/img/shields.jpg 500 _
+
+: Que nadie se asuste si no sabe soldar
+
+
+* Veamos algún ejemplo con Arduino unicamente
+
+: Ejemplo 1 o 2 de arduino (sin gobot)
+
+
+* Resumen (rápido)
+
+- Muy rápido (ejecución)
+- Muchos sensores soportados, librerías para casi todo
+- Desarrollo _lento_ (tarda en compilar, hay que resetear el dispositivo, conectarse a la red,...)
+- Programación en C/C++ (con lo que conlleva)
+- _Difícil_ de actualizar una vez en producción
+
+* Firmata
+
+- Arduino no se puede programar en Go (una RPi si)
+- *Firmata* es un protocolo para comunicar microcontroladores con programas de un ordenador _anfitrión_.
+- El Arduino lo _programamos_ con firmata para que se comunique con nuestra aplicación en Go (que usa gobot).
+- Firmata Builder [[http://www.firmatabuilder.com/]]
+
+: firmata deja al dispositivo "tonto" (no siempre), no hará nada por si solo
+
+* Gobot
+
+.image gobot/img/gobot-logo.png 400 _
+
+Golang Powered Robotics
+
+
+* Plataformas soportadas
+
+.image gobot/img/platforms1.png 570 _
+
+* Plataformas soportadas (continuación)
+
+.image gobot/img/platforms2.png 570 _
+
+
+* Instalación
+
+No puede ser más sencilla (si ya tenemos Go)
+
+    $ go get -d -u gobot.io/x/gobot/...
+
+
+: Go para crear robots
+
+
+* Vista general
+
+.image gobot/img/gobot.overview.png
+
+
+* Veamos algunos ejemplos
+
+
+* Comparativa (a grandes rasgos)
+
+.html gobot/snippets/tblchanges.html
+
+
+* Enlaces
+- Gobot [[https://gobot.io]]
+- Arduino [[https://www.arduino.cc/]]
+- Firmata Builder [[http://www.firmatabuilder.com/]]
+- Gophers Murcia [[https://www.meetup.com/Gophers-Murcia/]]
+- Makers of Murcia [[https://makersofmurcia.org/]]
+
+: Enlaces de interés
+
