@@ -72,7 +72,7 @@ No me hago responsable de las chipas y calambrazos
 * Resumen (rápido)
 
 - Muy rápido (ejecución)
-- Muchos sensores soportados, librerías para casi todo
+- Muchos dispositivos soportados, librerías para casi todo
 - Desarrollo _lento_ (tarda en compilar, hay que resetear el dispositivo, conectarse a la red,...)
 - Programación en C/C++ (con lo que conlleva)
 - _Difícil_ de actualizar una vez en producción
