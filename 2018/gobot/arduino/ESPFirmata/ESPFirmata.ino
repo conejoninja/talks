@@ -21,7 +21,7 @@
 
 #define NETWORK_PORT 3030
 
-char ssid[] = "gobot.TALK";
+char ssid[] = "GATIMIAUWPA";
 char wpa_passphrase[] = "q1w2e3r4t5y6";
 
 WiFiServerStream stream(NETWORK_PORT);
