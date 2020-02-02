@@ -1,0 +1,13 @@
+<div class="shadow"><ol>
+	<li><span class="com">// Configure the buzzer pin with the buzzer driver</span></li>
+	<li><span class="pln">bzrPin</span> <span class="pun">:=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A0</span></li>
+	<li><span class="pln">bzrPin</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinOutput</span><span class="pun">})</span></li>
+	<li><span class="pln">bzr</span> <span class="pun">:=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">bzrPin</span><span class="pun">)</span></li>
+	<li></li>
+	<li></li>
+	<li><span class="com">// play a sound by calling buzzer.Tone(note, duration) </span></li>
+	<li><span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><b><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G3</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></b></li>
+	</ol></div>
+	
+	
+	

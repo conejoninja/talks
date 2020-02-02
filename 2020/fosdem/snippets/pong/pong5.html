@@ -1,0 +1,13 @@
+<div class="shadow"><ol>
+    <li><span class="com">// I2C for the RTC DS3231</span></li>
+    <li><span class="pln">machine</span><span class="pun">.</span><span class="typ">I2C0</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">I2CConfig</span><span class="pun">{})</span></li>
+    <li></li>
+    <li><span class="pln">rtc</span> <span class="pun">:=</span> <span class="pln">ds3231</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">I2C0</span><span class="pun">)</span></li>
+    <li><span class="pln">rtc</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">()</span></li>
+    <li></li>
+    <li><span class="com">// Read date-time from RTC</span></li>
+    <li><span class="pln">dt</span><span class="pun">,</span> <span class="pln">err</span> <span class="pun">=</span> <span class="pln">rtc</span><span class="pun">.</span><span class="typ">ReadTime</span><span class="pun">()</span></li>
+    <li><span class="pln">hour</span> <span class="pun">:=</span> <span class="pln">dt</span><span class="pun">.</span><span class="typ">Hour</span><span class="pun">()</span></li>
+    <li><span class="pln">minute</span> <span class="pun">:=</span> <span class="pln">dt</span><span class="pun">.</span><span class="typ">Minute</span><span class="pun">()</span></li>
+    </ol>
+</div>

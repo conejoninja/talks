@@ -1,0 +1,14 @@
+<div class="shadow"><ol>
+    <li><span class="com">// SPI for the hub75</span></li>
+    <li><span class="pln">machine</span><span class="pun">.</span><span class="typ">SPI0</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">SPIConfig</span><span class="pun">{</span></li>
+    <li>	<span class="typ">Frequency</span><span class="pun">:</span> <span class="dec">8000000</span><span class="pun">,</span></li>
+    <li>	<span class="typ">Mode</span><span class="pun">:</span>      <span class="dec">0</span><span class="pun">})</span></li>
+    <li></li>
+    <li><span class="pln">display</span> <span class="pun">:=</span> <span class="pln">hub75</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">SPI0</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D6</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D5</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D8</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D10</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D9</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D7</span><span class="pun">)</span></li>
+    <li></li>
+    <li><span class="pln">display</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">hub75</span><span class="pun">.</span><span class="typ">Config</span><span class="pun">{</span></li>
+    <li>	<span class="typ">ColorDepth</span><span class="pun">:</span> <span class="dec">2</span><span class="pun">,</span></li>
+    <li>	<span class="typ">FastUpdate</span><span class="pun">:</span> <span class="kwd">true</span><span class="pun">,</span></li>
+    <li><span class="pun">})</span></li>
+    </ol>
+</div>

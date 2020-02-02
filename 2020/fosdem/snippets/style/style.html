@@ -1,0 +1,165 @@
+
+<style>
+	body {
+	--main-bgcolor: #f3f5f6;
+	--main-color: #000;
+	--link-color: #49e;
+	--header-bgcolor: #fff;
+	--header-color: #000;
+	--footer-bgcolor: #fff;
+	--border-color: #ccc;
+	--warn-bgcolor: rgba(255, 153, 0, 0.1);
+	--error-bgcolor: rgba(255, 0, 0, 0.1);
+	--sel-bgcolor: rgba(255, 204, 0, 0.3);
+	--header-button-bgcolor: #fff;
+	--header-button-border-color: rgba(0, 0, 0, 0.3);
+	--header-button-color: #000;
+
+	--dialog-bgcolor: #fff;
+	--dialog-color: #000;
+
+	--highlight-kwd-color: #d00;
+	--highlight-pln-color: #000;
+	--highlight-str-color: #090;
+	--highlight-pun-color: #333;
+	--highlight-dec-color: rgb(122, 77, 8);
+	--highlight-typ-color: rgb(43, 93, 143);
+	--highlight-com-color: #333;
+}
+
+.shadow {
+	margin-top: 20px;
+	background-color: #ffd;
+}
+
+.editor,
+.shadow,
+.log,
+textarea,
+code,
+kbd {
+	font-size: 20px;
+	line-height: 22px;
+	font-family: 'Fira Code', Menlo, Consolas, monospace;
+}
+
+code,
+kbd {
+	line-height: 22px;
+}
+
+.editor,
+.shadow,
+.log {
+	padding: 2em;
+}
+
+.editor,
+.shadow {
+	top: 0;
+	left: 0;
+	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+	padding-left: 55px;
+}
+
+.editor {
+	border: 0;
+	margin: 0;
+	background: none;
+	outline: none;
+	resize: none;
+	color: var(--main-color);
+}
+
+.editor.highlighted {
+	color: rgba(0, 0, 0, 0) !important;
+	caret-color: var(--main-color);
+}
+
+.editor,
+.log,
+.shadow ol li {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.shadow {
+	pointer-events: none;
+	color: rgba(0, 0, 0, 0);
+}
+
+.shadow ol {
+	margin: 0;
+	padding: 0;
+	counter-reset: li;
+	list-style-type: none;
+}
+
+.shadow ol li {
+	margin: 0;
+	padding: 0;
+	min-height: 22px;
+}
+
+.shadow ol li::before {
+	content: counter(li);
+	margin-left: -40px;
+	display: inline-block;
+	width: 40px;
+	color: rgba(0, 0, 0, 0.4);
+	counter-increment: li;
+	font-size: 10px;
+	text-align: right;
+	box-sizing: border-box;
+	padding-right: 15px;
+	overflow: hidden;
+	height: 22px;
+	float: left;
+	pointer-events: all;
+}
+
+
+/* Syntax highlighter (light scheme) */
+
+.kwd {
+	color: var(--highlight-kwd-color);
+}
+.pln {
+	color: var(--highlight-pln-color);
+}
+.str {
+	color: var(--highlight-str-color);
+}
+.pun {
+	color: var(--highlight-pun-color);
+}
+.dec {
+	color: var(--highlight-dec-color);
+}
+.typ {
+	color: var(--highlight-typ-color);
+}
+.com {
+	color: var(--highlight-com-color);
+}
+
+
+
+ /* Three image containers (use 25% for four, and 50% for two, etc) */
+ .column {
+  float: left;
+  width: 45%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+} 
+
+
+</style>

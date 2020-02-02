@@ -1,0 +1,27 @@
+<div class="shadow"><ol>
+    <li><span class="kwd">package</span> <span class="pln">ledrace</span></li>
+    <li></li>
+    <li><span class="kwd">import</span> <span class="pun">(</span></li>
+    <li>	<span class="str">"encoding/hex"</span></li>
+    <li>	<span class="str">"image/color"</span></li>
+    <li>	<span class="str">"machine"</span></li>
+    <li>	<span class="str">"strconv"</span></li>
+    <li>	<span class="str">"time"</span></li>
+    <li></li>
+    <li>	<span class="str">"github.com/conejoninja/ledrace/telemetry"</span></li>
+    <li>	</li>
+    <li>	<span class="str">"tinygo.org/x/drivers/buzzer"</span></li>
+    <li>	<span class="str">"tinygo.org/x/drivers/ws2812"</span> <span class="com">// driver for ws2812 LED strip</span></li>
+    <li><span class="pun">)</span></li>
+    <li></li>
+    <li><span class="kwd">func</span> <span class="pln">main</span><span class="pun">()</span> <span class="pun">{</span></li>
+    <li>	<span class="pln">ledpin</span> <span class="pun">:=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D2</span></li>
+    <li>	<span class="pln">ledpin</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinOutput</span><span class="pun">})</span></li>
+    <li>	<span class="pln">track</span> <span class="pun">:=</span> <span class="pln">ws2812</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">ledpin</span><span class="pun">)</span></li>
+    <li></li>
+    <li>	<span class="pln">leds</span> <span class="pun">:=</span> <span class="kwd">make</span><span class="pun">([]</span><span class="pln">color</span><span class="pun">.</span><span class="typ">RGBA</span><span class="pun">,</span> <span class="typ">TRACKLENGHT</span><span class="pun">)</span></li>
+    <li>	<span class="pln">leds</span><span class="pun">[</span><span class="dec">0</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">color</span><span class="pun">.</span><span class="typ">RGBA</span><span class="pun">{</span><span class="dec">255</span><span class="pun">,</span> <span class="dec">0</span><span class="pun">,</span> <span class="dec">0</span><span class="pun">,</span> <span class="dec">255</span><span class="pun">}</span></li>
+    <li>	<span class="pln">track</span><span class="pun">.</span><span class="typ">WriteColors</span><span class="pun">(</span><span class="pln">leds</span><span class="pun">)</span></li>
+    <li><span class="pun">}</span></li>
+    <li></li>
+    </ol></div>

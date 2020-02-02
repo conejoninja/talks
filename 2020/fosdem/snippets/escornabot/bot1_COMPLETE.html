@@ -1,0 +1,28 @@
+<div class="shadow"><ol>
+    <li><span class="kwd">package</span> <span class="pln">main</span></li>
+    <li></li>
+    <li><span class="kwd">import</span> <span class="pun">(</span></li>
+    <li>	<span class="str">"machine"</span></li>
+    <li></li>
+    <li>	<span class="com">// The bot's code</span></li>
+    <li>	<span class="str">"github.com/conejoninja/go-escornabot/bot"</span></li>
+    <li>	<span class="str">"github.com/conejoninja/go-escornabot/input"</span></li>
+    <li></li>
+    <li>	<span class="str">"tinygo.org/x/drivers/buzzer"</span> <span class="com">// buzzer driver</span></li>
+    <li>	<span class="str">"tinygo.org/x/drivers/easystepper"</span> <span class="com">// motor driver</span></li>
+    <li><span class="pun">)</span></li>
+    <li></li>
+    <li><span class="kwd">func</span> <span class="pln">main</span><span class="pun">()</span> <span class="pun">{</span></li>
+    <li>	<span class="pln">motors</span> <span class="pun">:=</span> <span class="pln">easystepper</span><span class="pun">.</span><span class="typ">NewDual</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">D0</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D7</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D1</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D9</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D10</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D12</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D11</span><span class="pun">,</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">D13</span><span class="pun">,</span> <span class="dec">200</span><span class="pun">,</span> <span class="dec">60</span><span class="pun">)</span></li>
+    <li>	<span class="pln">motors</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">()</span></li>
+    <li>	<span class="pln">buttons</span> <span class="pun">:=</span> <span class="pln">input</span><span class="pun">.</span><span class="typ">NewAnalogButtons</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">A1</span><span class="pun">)</span></li>
+    <li>	<span class="pln">bzrPin</span> <span class="pun">:=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A0</span></li>
+    <li>	<span class="pln">bzrPin</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinOutput</span><span class="pun">})</span></li>
+    <li>	<span class="pln">bzr</span> <span class="pun">:=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">bzrPin</span><span class="pun">)</span></li>
+    <li></li>
+    <li>	<span class="pln">escornabot</span> <span class="pun">:=</span> <span class="pln">bot</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(&amp;</span><span class="pln">motors</span><span class="pun">,</span> <span class="pun">&amp;</span><span class="pln">buttons</span><span class="pun">,</span> <span class="pun">&amp;</span><span class="pln">bzr</span><span class="pun">,</span> <span class="dec">542</span><span class="pun">)</span></li>
+    <li></li>
+    <li>	<span class="pln">escornabot</span><span class="pun">.</span><span class="typ">Loop</span><span class="pun">()</span></li>
+    <li><span class="pun">}</span></li>
+    <li></li>
+    </ol></div>

@@ -1,0 +1,353 @@
+Build real-world gaming hardware with TinyGo
+2 Feb 2020
+Tags: go, tinygo, toys
+
+Daniel Esteban
+@_conejo
+
+: I could talk about tinygo for hours but only have 20 minutes today
+
+* I'm a maker
+
+.image fosdem/img/gopherswrench.jpg 260 _
+
+_"Used_to_describe_those_who_love_to_create_things_in_their_spare_time_(often_electronic,_often_with_their_own_hands)._Also_called_Hobbyists._The_term_is_popular_in_the_open_hardware_and_hardware_hacking_electronics_communities."_
+
+.caption Urban Dictionary's top definition of [[https://www.urbandictionary.com/define.php?term=Maker][Maker]]
+
+.html fosdem/snippets/style/style.html 
+
+: I'm not a professional
+
+* TinyGo
+
+.image fosdem/img/tinygo-logo.png 300 _
+
+TinyGo is a project to bring the Go programming language to *microcontrollers* and modern web browsers by creating a new compiler based on LLVM.
+
+.caption Version 0.12.0 released on January 31th
+
+.caption [[https://archive.fosdem.org/2019/schedule/event/go_on_microcontrollers/][Fosdem 2019 TinyGo @deadprogram's talk]]
+
+.caption Now sponsored by Google ❤️
+
+: TinyGo is not a superset of Go, it's a new compiler
+
+* TinyGo compatible boards
+
+.image fosdem/img/tinygo-boards.jpg 470 _
+
+You can compile and run TinyGo programs on several different microcontroller boards such as the BBC micro:bit, the Arduino Nano33 IoT, Adafruit Itsybitsy M0,...
+
+* PineTime
+
+.image fosdem/img/pinetime.jpg 400 _
+
+[[https://wiki.pine64.org/index.php/PineTime][PineTime]], an open source smartwatch from Pine64
+
+Find them at their stand in building AW
+
+* TinyGo supported sensors & components
+
+- Analog sensors
+- RGB leds (APA102, WS2812, BlinkM)
+- Real Time Clock (DS1307, DS3231)
+- Humidity, temperature, pressure, ... (BME280, BMP180, SHT3x, Thermistor)
+- Sound (buzzer, microphone)
+- Light sensor (BH1750, VEML6070)
+- Distance sensor (VL53L1X)
+- Accelerometer, gyroscope (MM8653, MPU6050, LSM6DS3, LIS3DH, MAG3110)
+- EEPROM (AT24Cx)
+- Stepper & DC motors
+- GPS modules
+- ...
+
+* TinyGo displays
+
+.image fosdem/img/tinygo-displays.jpg 420 _
+
+* Tinygo Playground
+
+.image fosdem/img/tinygo-playground.png 420 _
+
+Don't have a board yet? Don't worry, you can emulate several boards at [[https://play.tinygo.org/][https://play.tinygo.org/]].
+
+* What are you going to see today?
+
+.image fosdem/img/caution.png 400 _
+
+Some fun to make projects you could do at home.
+
+: All information at the end, just some highlights
+
+
+* First project "Gopher says"
+
+3 buttons with a different color and sound each. It generates a longer sequence of color-sound each time that the user has to repeat.
+
+.image fosdem/img/gophersays.gif 300 _
+
+* Gopher says - components
+
+- 3 buttons
+- 3 leds
+- 3D printed parts
+- 1 Adafruit Circuit Playground Express (has a built-in buzzer)
+
+* Gopher says - (1) code imports
+
+.html fosdem/snippets/gophersays/gophersays1.html 
+
+* Gopher says - (2) setup the LEDs 
+
+.html fosdem/snippets/gophersays/gophersays2.html 
+
+: It's that simple
+
+* Gopher says - (3) setup the buttons
+
+.html fosdem/snippets/gophersays/gophersays2b.html 
+
+* Gopher says - (4) setup buzzer device
+
+.html fosdem/snippets/gophersays/gophersays3.html 
+
+* Gopher says - (5) Write the rest of the code
+
+.image fosdem/img/coding-rabbit.webp 500 _
+
+* Gopher says - (6) flash and run the code
+
+- Step 1: Connect your board via USB and enter bootloader mode
+- Step 2: Compile and flash the board with:
+
+    tinygo flash -target=circuitplay-express github.com/conejoninja/gophersays
+
+
+.image fosdem/img/gophersays.gif 300 _
+
+
+
+* Second project "2 Players PONG"
+
+Classic PONG -air hockey- game. Players control their rectangle on the screen with a knob (potentiometer). Additional real-time clock to show the time when not playing.
+
+.image fosdem/img/pong.gif 300 _
+
+
+* PONG - components
+
+- 2 potentiometers
+- 1 RGB LED matrix 64x32 (HUB75)
+- 1 Arduino Nano33 IoT
+- 1 RTC DS3231 (optional)
+
+* PONG - (1) code imports
+
+.html fosdem/snippets/pong/pong1.html 
+
+* PONG - (2) Analog pins - potentiometers
+
+Set up analog pins
+.html fosdem/snippets/pong/pong2a.html 
+
+Read analog value with .Get() int32
+.html fosdem/snippets/pong/pong2b.html 
+
+* PONG - (3) HUB75 display 
+
+.html fosdem/snippets/pong/pong3a.html 
+
+Change a pixel color with .*SetPixel*(x, y, color)
+
+.html fosdem/snippets/pong/pong3b.html 
+
+* PONG - (4) flash and run the code
+
+- Step 1: Connect your board via USB and enter bootloader mode
+- Step 2: Compile and flash the board with:
+
+    tinygo flash -target=nano33-iot github.com/conejoninja/tinypong
+
+.image fosdem/img/pong.gif 300 _
+
+
+* PONG - (A) DS3231 RTC
+
+.html fosdem/snippets/pong/pong5.html 
+
+* Third project "Game console"
+
+A portable game console that plays games
+
+.image fosdem/img/console1.gif 460 _
+
+* Game console - components
+
+.html fosdem/snippets/consoletbl.html
+
+.image fosdem/img/console3.jpg 300 _
+
+* Game console - components II
+
+Option C 
+
+- Nintedo Game Boy Advance (support is experimental)
+
+.image fosdem/img/gba.gif 400 _
+
+
+* Tinydraw - tinygo.org/x/tinydraw
+
+You could draw primitives (triangle, circle, lines,...) on any device that implements _drivers.Displayer_ interface (all current displays supported by TinyGo do)
+
+.image fosdem/img/tinydraw.png 440 _
+
+* Tinyfont - tinygo.org/x/tinyfont
+
+You could write text on any device that implements _drivers.Displayer_ interface (all current displays supported by TinyGo do).
+
+
+.html fosdem/snippets/tinyfont.html 
+
+.image fosdem/img/tinyfont.png 360 _
+
+
+
+* Fourth project - Escornabot
+
+Escornabot is an open source / open hardware *educational* robot (similar to Beebot or Cubetto). Great to introduce young children into programming.
+
+
+.image fosdem/img/escornabot2.gif 440 _
+
+.caption video from CEIP Présaras
+
+: open hardware, so you could adapt to your needs
+
+* Escornabot - what does it do?
+
+_Program_ the robot with the buttons (move forward, turn left/right, backward). It will execute the steps one by one.
+
+.image fosdem/img/escornabot2.jpg 420 _
+
+* Escornabot - what does it do? (II)
+There are different activities and resources at the [[https://escornabot.org/wiki/index.php?title=P%C3%A1gina_principal][project's wiki]] (mostly in Spanish).
+
+.image fosdem/img/escornabot1.gif 440 _
+
+.caption video from [[https://twitter.com/pablorubma][@pablorubma]]
+
+* Escornabot - components
+
+- 2 Stepper motors
+- 5 buttons
+- 1 buzzer
+- 3D printed parts
+- Itsybitsy-M0
+
+.image fosdem/img/escornabot1.jpg 280 _
+
+.caption picture from [[https://twitter.com/pablorubma][@pablorubma]]
+
+
+* Escornabot - (1) code imports
+
+.html fosdem/snippets/escornabot/bot1.html 
+
+* Escornabot - (2) setup the motors
+
+One motor
+.html fosdem/snippets/escornabot/bot2a.html 
+
+But our robot has two!
+.html fosdem/snippets/escornabot/bot2b.html 
+
+* Escornabot - (3) flash and run the code
+
+- Step 1: Connect your board via USB and enter bootloader mode
+- Step 2: Compile and flash the board with:
+
+    tinygo flash -target=itsybitsy-m0 github.com/conejoninja/go-escornabot
+
+.image fosdem/img/escornabot3.gif 330 _
+
+.caption video from [[https://twitter.com/pablorubma][@pablorubma]]
+
+
+* Last project "Open LED race"
+
+Simulate a race track with an addresable LED strip. Each color is a player and they must compete to win. It's a project started by Gerardo Barbarov at Arduino Day Sevilla 2019.
+
+.image fosdem/img/ledrace1.jpg 400 _
+
+.caption picture from [[https://www.facebook.com/m4reactor/photos/a.1002955349801717/2477657215664849/?type=3&theater][M4Reactor Makerspace, Salisbury, USA]]
+
+* Open LED race - components
+
+- Addresable LED strip (WS2812) as long as you want
+- Anything as input (two arcade buttons)
+- A buzzer (optional)
+- Arduino Nano33-IoT (it has wifi)
+
+* Open LED race - code imports
+
+.html fosdem/snippets/ledrace/ledrace3.html 
+
+* Open LED race - setup WS2812 LED strip
+
+WS2812 LED strips are controlled by a single pin (in output mode)
+
+.html fosdem/snippets/ledrace/ledrace4a.html 
+
+To change the color of its LEDs, send an array of the colors
+
+.html fosdem/snippets/ledrace/ledrace4b.html 
+
+* Open LED race - input
+
+You could use whatever you want as input, most common is to use some buttons, but here are some other ideas:
+
+.html fosdem/snippets/ledrace/ledrace1.html
+
+* Open LED race - The track
+
+We simulate the physics of the race and track, we could simulate a slope or ramp, special conditions like turbo, engine failure, pit stop, ...
+
+.html fosdem/snippets/ledrace/ledrace2.html
+
+On the left we could see a "force map", red part slows you down, green helps you go faster.
+
+
+* Open LED race - Telemetry
+
+Why not add wifi and have some telemetry data like professionals?
+
+.html fosdem/snippets/ledrace/ledrace5.html
+
+* Open LED race - Any volunteers?
+
+
+* Projects links
+
+All you need: source code, circuit schematics, 3D printed parts,...
+
+- [[https://github.com/conejoninja/gophersays][Gopher says]] 
+- [[https://github.com/conejoninja/gophersays][Tiny-PONG (and clock)]] 
+- [[https://github.com/conejoninja/snake][Sanke game]] 
+- [[https://github.com/conejoninja/gbatest][GBA demo]] 
+- [[https://github.com/conejoninja/go-escornabot][Escornabot]] 
+- [[https://github.com/conejoninja/ledrace][Open LED Race]] 
+- [[https://github.com/conejoninja/ledrace-ui][UI for Open LED Race]] 
+
+* Links
+
+- [[https://tinygo.org/][TinyGo]]
+- [[https://github.com/tinygo-org/tinyfont][TinyFont]]
+- [[https://github.com/tinygo-org/tinydraw][TinyDraw]]
+- [[https://github.com/tinygo-org/tinyfont][Open LED Race official website]]
+- [[http://escornabot.com/web/][Escornabot Official website]]
+
+.image fosdem/img/tinygo-logo.png 200 _
+
+Join us at *#TinyGo* channel on *gophers.slack.com*

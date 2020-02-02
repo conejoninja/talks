@@ -1,0 +1,221 @@
+<div class="shadow"><ol>
+	<li><span class="kwd">package</span> <span class="pln">main</span></li>
+	<li></li>
+	<li><span class="kwd">import</span> <span class="pun">(</span></li>
+	<li>	<span class="str">"machine"</span></li>
+	<li>	<span class="str">"math/rand"</span></li>
+	<li>	<span class="str">"time"</span></li>
+	<li></li>
+	<li>	<span class="str">"tinygo.org/x/drivers/buzzer"</span></li>
+	<li><span class="pun">)</span></li>
+	<li></li>
+	<li><span class="kwd">const</span> <span class="pun">(</span></li>
+	<li>	<span class="typ">RED</span> <span class="pun">=</span> <span class="pln">iota</span></li>
+	<li>	<span class="typ">GREEN</span></li>
+	<li>	<span class="typ">BLUE</span></li>
+	<li><span class="pun">)</span></li>
+	<li></li>
+	<li><span class="com">// different states of the game</span></li>
+	<li><span class="kwd">const</span> <span class="pun">(</span></li>
+	<li>	<span class="typ">IDLE</span> <span class="pun">=</span> <span class="pln">iota</span></li>
+	<li>	<span class="typ">START_GAME</span></li>
+	<li>	<span class="typ">GENERATE_SEQUENCE</span></li>
+	<li>	<span class="typ">PLAYER_INPUT</span></li>
+	<li>	<span class="typ">GAME_OVER</span></li>
+	<li>	<span class="typ">PLAYER_WINS</span></li>
+	<li><span class="pun">)</span></li>
+	<li></li>
+	<li><span class="com">// Game holds the pins for buttons and leds, and other game information</span></li>
+	<li><span class="kwd">type</span> <span class="typ">Game</span> <span class="kwd">struct</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">leds</span>          <span class="pun">[</span><span class="dec">3</span><span class="pun">]</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">Pin</span></li>
+	<li>	<span class="pln">buttons</span>       <span class="pun">[</span><span class="dec">3</span><span class="pun">]</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">Pin</span></li>
+	<li>	<span class="pln">buttonPressed</span> <span class="pun">[</span><span class="dec">3</span><span class="pun">]</span><span class="kwd">bool</span></li>
+	<li>	<span class="pln">tones</span>         <span class="pun">[</span><span class="dec">3</span><span class="pun">]</span><span class="kwd">float64</span></li>
+	<li>	<span class="pln">bzr</span>           <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">Device</span></li>
+	<li>	<span class="pln">sequence</span>      <span class="pun">[</span><span class="dec">20</span><span class="pun">]</span><span class="pln">uint8</span></li>
+	<li>	<span class="pln">round</span>         <span class="pln">uint8</span></li>
+	<li>	<span class="pln">state</span>         <span class="pln">uint8</span></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	<li><span class="kwd">func</span> <span class="pln">main</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">game</span> <span class="pun">:=</span> <span class="typ">Game</span><span class="pun">{}</span></li>
+	<li>	<span class="kwd">var</span> <span class="pln">i</span> <span class="pln">uint8</span></li>
+	<li>	<span class="kwd">var</span> <span class="pln">k</span> <span class="pln">uint8</span></li>
+	<li>	<span class="kwd">var</span> <span class="kwd">then</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Time</span></li>
+	<li></li>
+	<li>	<span class="com">// Set up the pins for the leds</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="typ">RED</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A1</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="typ">GREEN</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A2</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="typ">BLUE</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A3</span></li>
+	<li></li>
+	<li>	<span class="com">// Set up the pins for the buttons</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="typ">RED</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A5</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="typ">GREEN</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A6</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="typ">BLUE</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A7</span></li>
+	<li></li>
+	<li>	<span class="com">// Configure the LEDs pins as output, the buttons as input</span></li>
+	<li>	<span class="com">// set the leds off</span></li>
+	<li>	<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="dec">3</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>		<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinOutput</span><span class="pun">})</span></li>
+	<li>		<span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinInput</span><span class="pun">})</span></li>
+	<li></li>
+	<li>		<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Low</span><span class="pun">()</span></li>
+	<li>	<span class="pun">}</span></li>
+	<li></li>
+	<li>	<span class="com">// Configure the buzzer pin with the buzzer driver</span></li>
+	<li>	<span class="pln">bzrPin</span> <span class="pun">:=</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">A0</span></li>
+	<li>	<span class="pln">bzrPin</span><span class="pun">.</span><span class="typ">Configure</span><span class="pun">(</span><span class="pln">machine</span><span class="pun">.</span><span class="typ">PinConfig</span><span class="pun">{</span><span class="typ">Mode</span><span class="pun">:</span> <span class="pln">machine</span><span class="pun">.</span><span class="typ">PinOutput</span><span class="pun">})</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span> <span class="pun">=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">New</span><span class="pun">(</span><span class="pln">bzrPin</span><span class="pun">)</span></li>
+	<li></li>
+	<li>	<span class="com">// Assign each color/button a different tone</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">tones</span><span class="pun">[</span><span class="typ">RED</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G4</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">tones</span><span class="pun">[</span><span class="typ">GREEN</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">C4</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">tones</span><span class="pun">[</span><span class="typ">BLUE</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">buzzer</span><span class="pun">.</span><span class="typ">E4</span></li>
+	<li></li>
+	<li>	<span class="com">// Play a beep-beep sound</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">beepBeepSound</span><span class="pun">()</span></li>
+	<li></li>
+	<li>	<span class="com">// Start the game in IDLE mode</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">IDLE</span></li>
+	<li></li>
+	<li>	<span class="kwd">for</span> <span class="pun">{</span></li>
+	<li>		<span class="kwd">switch</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">{</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">IDLE</span><span class="pun">:</span></li>
+	<li>			<span class="kwd">for</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">==</span> <span class="typ">IDLE</span> <span class="pun">{</span></li>
+	<li>				<span class="com">// Check if any button is pressed</span></li>
+	<li>				<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="dec">3</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>					<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Low</span><span class="pun">()</span></li>
+	<li>					<span class="kwd">if</span> <span class="pun">!</span><span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Get</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>						<span class="com">// seed the randomness</span></li>
+	<li>						<span class="pln">rand</span><span class="pun">.</span><span class="typ">Seed</span><span class="pun">(</span><span class="pln">time</span><span class="pun">.</span><span class="typ">Now</span><span class="pun">().</span><span class="typ">Unix</span><span class="pun">()*</span><span class="kwd">int64</span><span class="pun">(</span><span class="pln">i</span><span class="pun">)</span> <span class="pun">+</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Now</span><span class="pun">().</span><span class="typ">UnixNano</span><span class="pun">()*</span><span class="kwd">int64</span><span class="pun">(</span><span class="pln">i</span><span class="pun">))</span></li>
+	<li>						<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">START_GAME</span></li>
+	<li>						<span class="kwd">break</span></li>
+	<li>					<span class="pun">}</span></li>
+	<li>				<span class="pun">}</span></li>
+	<li></li>
+	<li>				<span class="com">// light one LED at a time</span></li>
+	<li>				<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">k</span><span class="pun">].</span><span class="typ">High</span><span class="pun">()</span></li>
+	<li>				<span class="pln">k</span> <span class="pun">=</span> <span class="pun">(</span><span class="pln">k</span> <span class="pun">+</span> <span class="dec">1</span><span class="pun">)</span> <span class="pun">%</span> <span class="dec">3</span></li>
+	<li></li>
+	<li>				<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">500</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>			<span class="pun">}</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">START_GAME</span><span class="pun">:</span></li>
+	<li>			<span class="com">// turn off all the LEDs</span></li>
+	<li>			<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="dec">3</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>				<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Low</span><span class="pun">()</span></li>
+	<li>			<span class="pun">}</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">beepBeepSound</span><span class="pun">()</span></li>
+	<li>			<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">1</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Second</span><span class="pun">)</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">round</span> <span class="pun">=</span> <span class="dec">0</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">GENERATE_SEQUENCE</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">GENERATE_SEQUENCE</span><span class="pun">:</span></li>
+	<li>			<span class="com">// play existing sequence of color/sounds</span></li>
+	<li>			<span class="kwd">if</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">round</span> <span class="pun">&gt;</span> <span class="dec">0</span> <span class="pun">{</span></li>
+	<li>				<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">round</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>					<span class="pln">game</span><span class="pun">.</span><span class="pln">playTune</span><span class="pun">(</span><span class="pln">game</span><span class="pun">.</span><span class="pln">sequence</span><span class="pun">[</span><span class="pln">i</span><span class="pun">])</span></li>
+	<li>					<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>				<span class="pun">}</span></li>
+	<li>			<span class="pun">}</span></li>
+	<li>			<span class="com">// generate new step in the sequence</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">sequence</span><span class="pun">[</span><span class="pln">game</span><span class="pun">.</span><span class="pln">round</span><span class="pun">]</span> <span class="pun">=</span> <span class="pln">uint8</span><span class="pun">(</span><span class="pln">rand</span><span class="pun">.</span><span class="typ">Intn</span><span class="pun">(</span><span class="dec">3</span><span class="pun">))</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">playTune</span><span class="pun">(</span><span class="pln">game</span><span class="pun">.</span><span class="pln">sequence</span><span class="pun">[</span><span class="pln">game</span><span class="pun">.</span><span class="pln">round</span><span class="pun">])</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">round</span><span class="pun">++</span></li>
+	<li>			<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>			<span class="pln">k</span> <span class="pun">=</span> <span class="dec">0</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">PLAYER_INPUT</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">PLAYER_INPUT</span><span class="pun">:</span></li>
+	<li>			<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="dec">3</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>				<span class="pln">game</span><span class="pun">.</span><span class="pln">buttonPressed</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span> <span class="pun">=</span> <span class="kwd">false</span></li>
+	<li>			<span class="pun">}</span></li>
+	<li>			<span class="kwd">then</span> <span class="pun">=</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Now</span><span class="pun">()</span></li>
+	<li>			<span class="com">// wait for player input</span></li>
+	<li>			<span class="kwd">for</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">==</span> <span class="typ">PLAYER_INPUT</span> <span class="pun">{</span></li>
+	<li>				<span class="kwd">for</span> <span class="pln">i</span> <span class="pun">=</span> <span class="dec">0</span><span class="pun">;</span> <span class="pln">i</span> <span class="pun">&lt;</span> <span class="dec">3</span><span class="pun">;</span> <span class="pln">i</span><span class="pun">++</span> <span class="pun">{</span></li>
+	<li>					<span class="com">// check if button was pressed (and avoid double-click)</span></li>
+	<li>					<span class="kwd">if</span> <span class="pun">!</span><span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Get</span><span class="pun">()</span> <span class="pun">&amp;&amp;</span> <span class="pun">!</span><span class="pln">game</span><span class="pun">.</span><span class="pln">buttonPressed</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span> <span class="pun">{</span></li>
+	<li>						<span class="pln">game</span><span class="pun">.</span><span class="pln">buttonPressed</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span> <span class="pun">=</span> <span class="kwd">true</span></li>
+	<li>						<span class="kwd">if</span> <span class="pln">i</span> <span class="pun">!=</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">sequence</span><span class="pun">[</span><span class="pln">k</span><span class="pun">]</span> <span class="pun">{</span></li>
+	<li>							<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">GAME_OVER</span></li>
+	<li>						<span class="pun">}</span> <span class="kwd">else</span> <span class="pun">{</span></li>
+	<li>							<span class="kwd">then</span> <span class="pun">=</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Now</span><span class="pun">()</span></li>
+	<li>							<span class="pln">game</span><span class="pun">.</span><span class="pln">playTune</span><span class="pun">(</span><span class="pln">i</span><span class="pun">)</span></li>
+	<li>							<span class="pln">k</span><span class="pun">++</span></li>
+	<li>							<span class="kwd">if</span> <span class="pln">k</span> <span class="pun">&gt;=</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">round</span> <span class="pun">{</span></li>
+	<li>								<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">GENERATE_SEQUENCE</span></li>
+	<li>								<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">500</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>							<span class="pun">}</span></li>
+	<li>						<span class="pun">}</span></li>
+	<li>						<span class="kwd">break</span></li>
+	<li>					<span class="pun">}</span> <span class="kwd">else</span> <span class="kwd">if</span> <span class="pln">game</span><span class="pun">.</span><span class="pln">buttons</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="typ">Get</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>						<span class="com">// reset variable to avoid multiple clicks</span></li>
+	<li>						<span class="pln">game</span><span class="pun">.</span><span class="pln">buttonPressed</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span> <span class="pun">=</span> <span class="kwd">false</span></li>
+	<li>					<span class="pun">}</span></li>
+	<li>				<span class="pun">}</span></li>
+	<li></li>
+	<li>				<span class="com">// reset to IDLE if not pushing any buttons for long time</span></li>
+	<li>				<span class="kwd">if</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Since</span><span class="pun">(</span><span class="kwd">then</span><span class="pun">)</span> <span class="pun">&gt;</span> <span class="dec">20</span><span class="pun">*</span><span class="pln">time</span><span class="pun">.</span><span class="typ">Second</span> <span class="pun">{</span></li>
+	<li>					<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">IDLE</span></li>
+	<li>				<span class="pun">}</span></li>
+	<li>				<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">50</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>			<span class="pun">}</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">GAME_OVER</span><span class="pun">:</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">sadSound</span><span class="pun">()</span></li>
+	<li>			<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">3</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Second</span><span class="pun">)</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">IDLE</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">case</span> <span class="typ">PLAYER_WINS</span><span class="pun">:</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">happySound</span><span class="pun">()</span></li>
+	<li>			<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">3</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Second</span><span class="pun">)</span></li>
+	<li>			<span class="pln">game</span><span class="pun">.</span><span class="pln">state</span> <span class="pun">=</span> <span class="typ">IDLE</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="kwd">default</span><span class="pun">:</span></li>
+	<li>			<span class="kwd">break</span></li>
+	<li>		<span class="pun">}</span></li>
+	<li>	<span class="pun">}</span></li>
+	<li></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	<li><span class="com">// happySound plays a happy sound</span></li>
+	<li><span class="kwd">func</span> <span class="pun">(</span><span class="pln">game</span> <span class="pun">*</span><span class="typ">Game</span><span class="pun">)</span> <span class="pln">happySound</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G3</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">A3</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">B4</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	<li><span class="com">// sadSound plays a sad sound</span></li>
+	<li><span class="kwd">func</span> <span class="pun">(</span><span class="pln">game</span> <span class="pun">*</span><span class="typ">Game</span><span class="pun">)</span> <span class="pln">sadSound</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">B4</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">A3</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G3</span><span class="pun">,</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">100</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	<li><span class="com">// beepBeepSound plays a short double beep sound</span></li>
+	<li><span class="kwd">func</span> <span class="pun">(</span><span class="pln">game</span> <span class="pun">*</span><span class="typ">Game</span><span class="pun">)</span> <span class="pln">beepBeepSound</span><span class="pun">()</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G4</span><span class="pun">,</span> <span class="dec">0.25</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">30</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">buzzer</span><span class="pun">.</span><span class="typ">G4</span><span class="pun">,</span> <span class="dec">0.25</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">30</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	<li><span class="com">// playTune plays the tune and lights the corresponding color</span></li>
+	<li><span class="kwd">func</span> <span class="pun">(</span><span class="pln">game</span> <span class="pun">*</span><span class="typ">Game</span><span class="pun">)</span> <span class="pln">playTune</span><span class="pun">(</span><span class="pln">color</span> <span class="pln">uint8</span><span class="pun">)</span> <span class="pun">{</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">color</span><span class="pun">].</span><span class="typ">High</span><span class="pun">()</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">bzr</span><span class="pun">.</span><span class="typ">Tone</span><span class="pun">(</span><span class="pln">game</span><span class="pun">.</span><span class="pln">tones</span><span class="pun">[</span><span class="pln">color</span><span class="pun">],</span> <span class="dec">0.5</span><span class="pun">)</span></li>
+	<li>	<span class="pln">time</span><span class="pun">.</span><span class="typ">Sleep</span><span class="pun">(</span><span class="dec">30</span> <span class="pun">*</span> <span class="pln">time</span><span class="pun">.</span><span class="typ">Millisecond</span><span class="pun">)</span></li>
+	<li>	<span class="pln">game</span><span class="pun">.</span><span class="pln">leds</span><span class="pun">[</span><span class="pln">color</span><span class="pun">].</span><span class="typ">Low</span><span class="pun">()</span></li>
+	<li><span class="pun">}</span></li>
+	<li></li>
+	</ol></div>
+	
+	
+	
