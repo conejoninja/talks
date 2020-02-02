@@ -345,7 +345,7 @@ All you need: source code, circuit schematics, 3D printed parts,...
 - [[https://tinygo.org/][TinyGo]]
 - [[https://github.com/tinygo-org/tinyfont][TinyFont]]
 - [[https://github.com/tinygo-org/tinydraw][TinyDraw]]
-- [[https://github.com/tinygo-org/tinyfont][Open LED Race official website]]
+- [[https://openledrace.net/][Open LED Race official website]]
 - [[http://escornabot.com/web/][Escornabot Official website]]
 
 .image fosdem/img/tinygo-logo.png 200 _
